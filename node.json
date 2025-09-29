@@ -1,6 +1,7 @@
 {
   "interval": {
     "title": "Tid mellan bilder (sekunder)",
+	"name": "Scouternas info-beamer",
     "type": "number",
     "default": 5,
     "help": "Hur länge varje bild visas innan nästa visas"
