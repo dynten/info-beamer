@@ -3,5 +3,5 @@
     "desc": "A remote controllable slideshow",
     "author": "Dynten <info@dynten.net>",
     "repository": "https://github.com/dynten/info-beamer",
-    "platforms": ["pi/v4", "pi/v5", "pi/v6", "pi/v7", "pi/v8"]
+    "platforms": ["pi/v6", "pi/v7", "pi/v8"]
 }
