@@ -1,0 +1,8 @@
+{
+  "interval": {
+    "title": "Tid mellan bilder (sekunder)",
+    "type": "number",
+    "default": 5,
+    "help": "Hur länge varje bild visas innan nästa visas"
+  }
+}
