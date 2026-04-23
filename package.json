@@ -1,7 +1,7 @@
 {
-    "name": "Slideshow",
-    "desc": "A remote controllable slideshow",
-    "author": "Dynten <info@dynten.net>",
-    "repository": "https://github.com/dynten/info-beamer",
-    "platforms": ["pi/v6", "pi/v7", "pi/v8"]
+    "name": "J26 Signage System",
+    "version": "1.0.0",
+    "description": "Stående skärm med zoner och realtidsticker",
+    "managed": true,
+    "options": "option.json"
 }

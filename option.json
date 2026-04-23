@@ -1,0 +1,20 @@
+[
+    {
+        "title": "Inställningar",
+        "type": "section"
+    },
+    {
+        "name": "ticker_speed",
+        "title": "Hastighet på rulltext",
+        "type": "slider",
+        "min": 1,
+        "max": 20,
+        "default": 5
+    },
+    {
+        "name": "background_color",
+        "title": "Bakgrundsfärg (om bild saknas)",
+        "type": "color",
+        "default": [0, 0, 0, 1]
+    }
+]
