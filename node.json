@@ -1,20 +1,13 @@
 {
     "name": "J26 Signage System",
     "options": [
-        {
-            "title": "Inställningar",
-            "type": "section"
-        },
+        { "title": "Instaellningar", "type": "section" },
         {
             "name": "rotation",
-            "title": "Skärmrotation",
+            "title": "Skaermrotation",
             "type": "select",
             "default": 0,
-            "options": [
-                [0,   "Ingen"],
-                [90,  "+90°"],
-                [270, "-90°"]
-            ]
+            "options": [[0,"Ingen"],[90,"+90"],[270,"-90"]]
         },
         {
             "name": "ticker_text",
@@ -24,21 +17,36 @@
         },
         {
             "name": "ticker_speed",
-            "title": "Hastighet på rulltext (px/s)",
+            "title": "Hastighet pa rulltext (px/s)",
             "type": "integer",
             "default": 200
         },
+        { "title": "Zoner", "type": "section",
+          "intro": "Dela contentomradet i rader och kolumner. Texter visas bara om de ligger inom valt rutnät." },
         {
-            "name": "background_color",
-            "title": "Bakgrundsfärg (om bild saknas)",
-            "type": "color",
-            "default": [0, 0, 0, 1]
+            "name": "grid_rows",
+            "title": "Antal rader",
+            "type": "select",
+            "default": 1,
+            "options": [[1,"1 (hel)"],[2,"2 (halvt)"],[3,"3 (tredjedelar)"]]
         },
         {
-            "name": "interval",
-            "title": "Bildintervall (sekunder)",
-            "type": "integer",
-            "default": 8
-        }
+            "name": "grid_cols",
+            "title": "Antal kolumner",
+            "type": "select",
+            "default": 1,
+            "options": [[1,"1 (hel)"],[2,"2 (halvt)"],[3,"3 (tredjedelar)"]]
+        },
+        { "title": "Zontexter", "type": "section",
+          "intro": "Skriv text for varje zon. Tom text visas inte." },
+        { "name": "text_r1c1", "title": "Rad 1 - Kol 1", "type": "string", "default": "" },
+        { "name": "text_r1c2", "title": "Rad 1 - Kol 2", "type": "string", "default": "" },
+        { "name": "text_r1c3", "title": "Rad 1 - Kol 3", "type": "string", "default": "" },
+        { "name": "text_r2c1", "title": "Rad 2 - Kol 1", "type": "string", "default": "" },
+        { "name": "text_r2c2", "title": "Rad 2 - Kol 2", "type": "string", "default": "" },
+        { "name": "text_r2c3", "title": "Rad 2 - Kol 3", "type": "string", "default": "" },
+        { "name": "text_r3c1", "title": "Rad 3 - Kol 1", "type": "string", "default": "" },
+        { "name": "text_r3c2", "title": "Rad 3 - Kol 2", "type": "string", "default": "" },
+        { "name": "text_r3c3", "title": "Rad 3 - Kol 3", "type": "string", "default": "" }
     ]
 }
