@@ -7,9 +7,11 @@ local ticker_speed = 200
 local ticker_text  = "J26 Signage"
 local ticker_x     = NATIVE_WIDTH
 local ticker_h     = 70
+local st           = util.screen_transform(0)
 
 util.json_watch("config.json", function(config)
     ticker_speed = config.ticker_speed or 200
+    st = util.screen_transform(config.rotation or 0)
     if config.ticker_text and config.ticker_text ~= "" then
         ticker_text = config.ticker_text
     end
@@ -30,6 +32,7 @@ function node.render()
 
     -- Bakgrund
     gl.clear(0, 0, 0, 1)
+    st()
     background:draw(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT)
 
     -- Flytta tickern

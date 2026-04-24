@@ -6,6 +6,17 @@
             "type": "section"
         },
         {
+            "name": "rotation",
+            "title": "Skärmrotation",
+            "type": "select",
+            "default": 0,
+            "options": [
+                [0,   "Ingen"],
+                [90,  "+90°"],
+                [270, "-90°"]
+            ]
+        },
+        {
             "name": "ticker_text",
             "title": "Rulltext",
             "type": "string",
