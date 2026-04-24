@@ -16,11 +16,11 @@ util.json_watch("config.json", function(config)
     local rot = config.rotation or 0
     st = util.screen_transform(rot)
     if rot == 90 then
-        vh = NATIVE_HEIGHT
-        vw = NATIVE_WIDTH
+        vh = NATIVE_WIDTH
+        vw = NATIVE_HEIGHT
     elseif rot == 270 then -- -90
-        vw = NATIVE_WIDTH
-        vh = NATIVE_HEIGHT
+        vh = NATIVE_WIDTH
+        vw = NATIVE_HEIGHT
     else
         vw = NATIVE_WIDTH
         vh = NATIVE_HEIGHT
