@@ -11,11 +11,17 @@ local vh           = NATIVE_HEIGHT
 local grid_rows    = 1
 local grid_cols    = 1
 
--- Initialisera grid-texter med tomma strängar
+-- Initialisera grid-texter och bilder med tomma värden
 local grid_texts = {}
 for r = 1, 3 do
     grid_texts[r] = {}
     for c = 1, 3 do grid_texts[r][c] = "" end
+end
+
+local cell_images = {}
+for r = 1, 3 do
+    cell_images[r] = {}
+    for c = 1, 3 do cell_images[r][c] = nil end
 end
 
 util.json_watch("config.json", function(config)
@@ -38,6 +44,24 @@ util.json_watch("config.json", function(config)
             grid_texts[r][c] = config[key] or ""
         end
     end
+    for r = 1, 3 do
+        for c = 1, 3 do
+            local key = "image_r" .. r .. "c" .. c
+            local asset = config[key]
+            local filename = nil
+            if type(asset) == "string" then
+                filename = asset
+            elseif type(asset) == "table" and asset.filename then
+                filename = asset.filename
+            end
+            if filename then
+                local ok, img = pcall(resource.load_image, filename)
+                cell_images[r][c] = ok and img or nil
+            else
+                cell_images[r][c] = nil
+            end
+        end
+    end
     if config.ticker_text and config.ticker_text ~= "" then
         ticker_text = config.ticker_text
     end
@@ -48,17 +72,24 @@ util.file_watch("ticker.txt", function(content)
     if trimmed ~= "" then ticker_text = trimmed end
 end)
 
-local function draw_cell(text, x1, y1, x2, y2)
-    if text == "" then return end
+local function draw_cell(text, image, x1, y1, x2, y2)
+    if text == "" and image == nil then return end
     local cw = x2 - x1
     local ch = y2 - y1
-    local size = ch * 0.35
-    local tw = font:width(text, size)
-    while tw > cw * 0.88 and size > 8 do
-        size = size * 0.92
-        tw = font:width(text, size)
+    if image then
+        image:draw(x1 + 4, y1 + 4, x2 - 4, y2 - 4)
     end
-    font:write(x1 + (cw - tw) / 2, y1 + (ch - size) / 2, text, size, 0.05, 0.1, 0.35, 1)
+    if text ~= "" then
+        local size = ch * 0.35
+        local tw = font:width(text, size)
+        while tw > cw * 0.88 and size > 8 do
+            size = size * 0.92
+            tw = font:width(text, size)
+        end
+        local tr, tg, tb = 0.05, 0.1, 0.35
+        if image then tr, tg, tb = 1, 1, 1 end
+        font:write(x1 + (cw - tw) / 2, y1 + (ch - size) / 2, text, size, tr, tg, tb, 1)
+    end
 end
 
 local last_time = sys.now()
@@ -84,7 +115,7 @@ function node.render()
         for c = 1, grid_cols do
             local x1 = (c - 1) * cell_w
             local y1 = (r - 1) * cell_h
-            draw_cell(grid_texts[r][c], x1, y1, x1 + cell_w, y1 + cell_h)
+            draw_cell(grid_texts[r][c], cell_images[r][c], x1, y1, x1 + cell_w, y1 + cell_h)
         end
     end
 
