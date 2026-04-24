@@ -6,6 +6,12 @@
             "type": "section"
         },
         {
+            "name": "ticker_text",
+            "title": "Rulltext",
+            "type": "string",
+            "default": "J26 Signage"
+        },
+        {
             "name": "ticker_speed",
             "title": "Hastighet på rulltext (px/s)",
             "type": "integer",

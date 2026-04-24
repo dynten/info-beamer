@@ -10,10 +10,15 @@ local ticker_h     = 70
 
 util.json_watch("config.json", function(config)
     ticker_speed = config.ticker_speed or 200
+    if config.ticker_text and config.ticker_text ~= "" then
+        ticker_text = config.ticker_text
+    end
 end)
 
 util.file_watch("ticker.txt", function(content)
-    ticker_text = content:gsub("%s+$", ""):gsub("\n", "   |   ")
+    -- Används som fallback om ticker_text ej är satt i settings
+    local trimmed = content:gsub("%s+$", ""):gsub("\n", "   |   ")
+    if trimmed ~= "" then ticker_text = trimmed end
 end)
 
 local last_time = sys.now()
