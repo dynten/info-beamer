@@ -60,7 +60,7 @@ local function draw_cell(text, x1, y1, x2, y2)
         size = size * 0.92
         tw = font:width(text, size)
     end
-    font:write(x1 + (cw - tw) / 2, y1 + (ch - size) / 2, text, size, 1, 1, 1, 1)
+    font:write(x1 + (cw - tw) / 2, y1 + (ch - size) / 2, text, size, 0.05, 0.1, 0.35, 1)
 end
 
 local last_time = sys.now()
@@ -96,5 +96,5 @@ function node.render()
     local text_size = ticker_h * 0.7
     local text_w = font:width(ticker_text, text_size)
     if ticker_x < -text_w then ticker_x = vw end
-    font:write(ticker_x, content_h + (ticker_h - text_size) / 2, ticker_text, text_size, 0.05, 0.1, 0.35, 1)
+    font:write(ticker_x, content_h + (ticker_h - text_size) / 2, ticker_text, text_size, 1, 1, 1, 1)
 end
