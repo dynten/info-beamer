@@ -4,17 +4,12 @@ local font       = resource.load_font("font.ttf")
 local background = resource.load_image("background.jpg")
 local ticker_speed = 200
 local ticker_text  = "J26 Signage"
-local ticker_text2 = "J26 Signage"
 local ticker_x     = NATIVE_WIDTH
-local ticker_x2    = NATIVE_WIDTH
 local st           = util.screen_transform(0)
 local vw           = NATIVE_WIDTH
 local vh           = NATIVE_HEIGHT
 local grid_rows    = 1
 local grid_cols    = 1
-local layout       = 0
-local ticker_bg    = resource.create_colored_texture(0, 0, 0, 0.75)
-local tbr, tbg, tbb, tba = 0, 0, 0, 0.75
 
 -- Initialisera grid-texter med tomma strängar
 local grid_texts = {}
@@ -35,12 +30,8 @@ util.json_watch("config.json", function(config)
         vh = NATIVE_HEIGHT
     end
     ticker_x = vw
-    ticker_x2 = vw
     grid_rows = config.grid_rows or 1
     grid_cols = config.grid_cols or 1
-    layout = config.layout or 0
-    local tc = config.ticker_bg_color or {0, 0, 0, 0.7}
-    tbr, tbg, tbb, tba = tc[1], tc[2], tc[3], tc[4]
     for r = 1, 3 do
         for c = 1, 3 do
             local key = "text_r" .. r .. "c" .. c
@@ -49,9 +40,6 @@ util.json_watch("config.json", function(config)
     end
     if config.ticker_text and config.ticker_text ~= "" then
         ticker_text = config.ticker_text
-    end
-    if config.ticker_text2 and config.ticker_text2 ~= "" then
-        ticker_text2 = config.ticker_text2
     end
 end)
 
@@ -80,59 +68,31 @@ function node.render()
     local dt  = now - last_time
     last_time = now
 
-    local ticker_h  = math.floor(vh / 10)
-    local text_size = ticker_h * 0.7
+    local ticker_h   = math.floor(vh / 10)
+    local content_h  = vh - ticker_h
 
     gl.clear(0, 0, 0, 1)
     st()
+
+    -- Bakgrundsbild
     background:draw(0, 0, vw, vh)
 
-    -- Uppdatera ticker-positioner en gång per frame
+    -- Rutnät med text
+    local cell_w = vw / grid_cols
+    local cell_h = content_h / grid_rows
+    for r = 1, grid_rows do
+        for c = 1, grid_cols do
+            local x1 = (c - 1) * cell_w
+            local y1 = (r - 1) * cell_h
+            draw_cell(grid_texts[r][c], x1, y1, x1 + cell_w, y1 + cell_h)
+        end
+    end
+
+    -- Ticker-bakgrund och text
+    -- ticker_bg:draw(0, content_h, vw, vh)
     ticker_x = ticker_x - ticker_speed * dt
+    local text_size = ticker_h * 0.7
     local text_w = font:width(ticker_text, text_size)
     if ticker_x < -text_w then ticker_x = vw end
-
-    ticker_x2 = ticker_x2 - ticker_speed * dt
-    local text_w2 = font:width(ticker_text2, text_size)
-    if ticker_x2 < -text_w2 then ticker_x2 = vw end
-
-    if layout == 1 then
-        -- Delad layout: cell(4/10) + ticker(1/10) + cell(4/10) + ticker(1/10)
-        local cell_h       = math.floor(vh * 4 / 10)
-        local mid_ticker_y = cell_h
-        local bot_cell_y   = cell_h + ticker_h
-        local bot_ticker_y = bot_cell_y + cell_h
-        local cell_w       = vw / grid_cols
-
-        for c = 1, grid_cols do
-            local x1 = (c - 1) * cell_w
-            draw_cell(grid_texts[1][c], x1, 0, x1 + cell_w, cell_h)
-        end
-
-        ticker_bg:draw(0, mid_ticker_y, vw, mid_ticker_y + ticker_h)
-        font:write(ticker_x, mid_ticker_y + (ticker_h - text_size) / 2, ticker_text, text_size, 1, 1, 1, 1)
-
-        for c = 1, grid_cols do
-            local x1 = (c - 1) * cell_w
-            draw_cell(grid_texts[2][c], x1, bot_cell_y, x1 + cell_w, bot_cell_y + cell_h)
-        end
-
-        ticker_bg:draw(0, bot_ticker_y, vw, vh)
-        font:write(ticker_x2, bot_ticker_y + (ticker_h - text_size) / 2, ticker_text2, text_size, 1, 1, 1, 1)
-    else
-        -- Standard layout: rutnat(9/10) + ticker(1/10)
-        local content_h = vh - ticker_h
-        local cell_w = vw / grid_cols
-        local cell_h = content_h / grid_rows
-        for r = 1, grid_rows do
-            for c = 1, grid_cols do
-                local x1 = (c - 1) * cell_w
-                local y1 = (r - 1) * cell_h
-                draw_cell(grid_texts[r][c], x1, y1, x1 + cell_w, y1 + cell_h)
-            end
-        end
-
-        ticker_bg:draw(0, content_h, vw, vh)
-        font:write(ticker_x, content_h + (ticker_h - text_size) / 2, ticker_text, text_size, 1, 1, 1, 1)
-    end
+    font:write(ticker_x, content_h + (ticker_h - text_size) / 2, ticker_text, text_size, 1, 1, 1, 1)
 end

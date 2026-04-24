@@ -10,21 +10,8 @@
             "options": [[0,"Ingen"],[90,"+90"],[270,"-90"]]
         },
         {
-            "name": "layout",
-            "title": "Layout",
-            "type": "select",
-            "default": 0,
-            "options": [[0,"Standard"],[1,"Delad (cell+ticker+cell+ticker)"]]
-        },
-        {
             "name": "ticker_text",
-            "title": "Rulltext 1",
-            "type": "string",
-            "default": "J26 Signage"
-        },
-        {
-            "name": "ticker_text2",
-            "title": "Rulltext 2 (delad layout)",
+            "title": "Rulltext",
             "type": "string",
             "default": "J26 Signage"
         },
@@ -33,12 +20,6 @@
             "title": "Hastighet pa rulltext (px/s)",
             "type": "integer",
             "default": 200
-        },
-        {
-            "name": "ticker_bg_color",
-            "title": "Ticker-bakgrundsfarg",
-            "type": "color",
-            "default": [0, 0, 0, 0.7]
         },
         { "title": "Zoner", "type": "section",
           "intro": "Dela contentomradet i rader och kolumner. Texter visas bara om de ligger inom valt rutnät." },
