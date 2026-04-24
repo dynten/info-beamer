@@ -1,10 +1,14 @@
--- node.lua – STEG 2: röd bakgrund + font + rullande text
+-- node.lua – STEG 3: pcall på font, röd bakgrund
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
 local W = NATIVE_WIDTH
 local H = NATIVE_HEIGHT
 
-local font        = resource.load_font("font.ttf")
+local font = nil
+local ok, err = pcall(function()
+    font = resource.load_font("font.ttf")
+end)
+
 local ticker_text = "Testar ticker..."
 local ticker_x    = W
 local last_time   = sys.now()
@@ -21,15 +25,16 @@ function node.render()
     local dt  = math.max(0, now - last_time)
     last_time = now
 
-    gl.clear(1, 0, 0, 1)  -- röd bakgrund (tas bort i nästa steg)
+    gl.clear(1, 0, 0, 1)
 
-    local size = math.floor(H * 0.05)
-    local ty   = math.floor((H - size) / 2)
-    font:write(ticker_x, ty, ticker_text, size, 1, 1, 1, 1)
-
-    ticker_x = ticker_x - 200 * dt
-    if ticker_x < -(font:width(ticker_text, size) + 50) then
-        ticker_x = W + 50
+    if font then
+        local size = math.floor(H * 0.05)
+        local ty   = math.floor((H - size) / 2)
+        font:write(ticker_x, ty, ticker_text, size, 1, 1, 1, 1)
+        ticker_x = ticker_x - 200 * dt
+        if ticker_x < -(font:width(ticker_text, size) + 50) then
+            ticker_x = W + 50
+        end
     end
 end
 
