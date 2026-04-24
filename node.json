@@ -1,10 +1,27 @@
 {
-  "name": "J26 Signage System",
-  "version": "1.0.0",
-  "desc": "Stående skärm med zoner och realtidsticker",
-  "description": "Stående skärm med zoner och realtidsticker",
-  "author": "Krabban",
-  "main": "node.lua",
-  "options": "option.json",
-  "managed": true
+    "name": "J26 Signage System",
+    "options": [
+        {
+            "title": "Inställningar",
+            "type": "section"
+        },
+        {
+            "name": "ticker_speed",
+            "title": "Hastighet på rulltext (px/s)",
+            "type": "integer",
+            "default": 200
+        },
+        {
+            "name": "background_color",
+            "title": "Bakgrundsfärg (om bild saknas)",
+            "type": "color",
+            "default": [0, 0, 0, 1]
+        },
+        {
+            "name": "interval",
+            "title": "Bildintervall (sekunder)",
+            "type": "integer",
+            "default": 8
+        }
+    ]
 }

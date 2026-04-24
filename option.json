@@ -5,11 +5,9 @@
     },
     {
         "name": "ticker_speed",
-        "title": "Hastighet på rulltext",
-        "type": "slider",
-        "min": 1,
-        "max": 20,
-        "default": 5
+        "title": "Hastighet på rulltext (px/s)",
+        "type": "integer",
+        "default": 200
     },
     {
         "name": "background_color",

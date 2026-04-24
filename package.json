@@ -1,9 +1,12 @@
 {
     "name": "J26_Signage_System",
-    "version": "1.0.0",
-    "description": "Stående skärm med zoner och realtidsticker",
-    "desc": "Stående skärm med zoner och realtidsticker",
     "author": "Krabban",
-    "managed": true,
-    "options": "option.json"
+    "desc": "Stående skärm med zoner och realtidsticker",
+    "version": "1.0.0",
+    "platforms": ["pi/epoch-1", "pi/epoch-2"],
+    "nesting": {
+        "parents": ["top-level"],
+        "childs": []
+    }
 }
+

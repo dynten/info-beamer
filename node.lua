@@ -57,6 +57,43 @@ local layout = {
     }
 }
 
+-- Apply config-driven overrides after layout is defined
+local function apply_config()
+    if config.ticker_speed then
+        layout.overlays[1].speed = config.ticker_speed
+    end
+    if config.interval then
+        for _, f in ipairs(layout.fields) do
+            if f.type == "slideshow" then f.interval = config.interval end
+        end
+    end
+    if config.background_color and config.background_color.rgba then
+        layout.background.color = config.background_color.rgba
+    end
+end
+
+-- Runtime config (updated via config.json)
+local config = {
+    ticker_speed     = 200,
+    interval         = 8,
+    background_color = { rgba = {0, 0, 0, 1} },
+}
+
+util.json_watch("config.json", function(new_config)
+    config = new_config
+    -- Update live ticker speed
+    local t = state and state.overlays and state.overlays["ticker"]
+    if t then
+        t.speed = config.ticker_speed or 200
+    end
+    -- Update live slideshow interval
+    for _, f in pairs(state and state.fields or {}) do
+        if f._config and f._config.type == "slideshow" then
+            f._config.interval = config.interval or 8
+        end
+    end
+end)
+
 -- State
 local state = { fields = {}, overlays = {}, last_time = sys.now() }
 
@@ -176,6 +213,8 @@ function node.render()
     if dt <= 0 then dt = 0 end
     state.last_time = now
 
+    apply_config()
+
     -- Background
     local bgimg = nil
     if layout.background and layout.background.src and file_exists(layout.background.src) then
@@ -184,7 +223,7 @@ function node.render()
     if bgimg then
         bgimg:draw(0, 0, SCREEN_W, SCREEN_H)
     else
-        local c = layout.background.color or {0,0,0,1}
+        local c = (config.background_color and config.background_color.rgba) or layout.background.color or {0,0,0,1}
         gl.clear(c[1], c[2], c[3], c[4] or 1)
     end
 
@@ -218,7 +257,8 @@ function node.render()
         if o._config.type == "ticker" then
             local size = math.floor((o.height or 0.06) * SCREEN_H * 0.6 + 0.5)
             local tw = font and font:width(o.text or "", size) or 0
-            o.x = o.x - (o.speed or 150) * dt
+            local speed = config.ticker_speed or o.speed or 150
+            o.x = o.x - speed * dt
             if o.x < -tw - 50 then o.x = SCREEN_W + 50 end
         end
     end

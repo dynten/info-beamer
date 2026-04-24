@@ -6,11 +6,8 @@
   "fields": {
     "interval": {
       "title": "Bildintervall (sekunder)",
-      "type": "number",
-      "default": 5,
-      "step": 1,
-      "min": 1,
-      "max": 3600
+      "type": "integer",
+      "default": 8
     }
   }
 }
