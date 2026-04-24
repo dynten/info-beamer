@@ -6,7 +6,7 @@ local background = resource.load_image("background.jpg")
 local ticker_speed = 200
 local ticker_text  = "J26 Signage"
 local ticker_x     = NATIVE_WIDTH
-local ticker_h     = 100
+local ticker_h     = NATIVE_HEIGHT / 4
 local st           = util.screen_transform(0)
 local vw           = NATIVE_WIDTH
 local vh           = NATIVE_HEIGHT
@@ -25,6 +25,8 @@ util.json_watch("config.json", function(config)
         vw = NATIVE_WIDTH
         vh = NATIVE_HEIGHT
     end
+    ticker_x = vw
+    ticker_h = vh / 4
     if config.ticker_text and config.ticker_text ~= "" then
         ticker_text = config.ticker_text
     end
