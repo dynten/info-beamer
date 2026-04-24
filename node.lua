@@ -11,7 +11,8 @@ local vh           = NATIVE_HEIGHT
 local grid_rows    = 1
 local grid_cols    = 1
 local layout       = 0
-local ticker_bg    = resource.create_colored_texture(0, 0, 0, 0.7)
+local ticker_bg    = resource.create_colored_texture(1, 1, 1, 1)
+local tbr, tbg, tbb, tba = 0, 0, 0, 0.7
 
 -- Initialisera grid-texter med tomma strängar
 local grid_texts = {}
@@ -36,7 +37,7 @@ util.json_watch("config.json", function(config)
     grid_cols = config.grid_cols or 1
     layout = config.layout or 0
     local tc = config.ticker_bg_color or {0, 0, 0, 0.7}
-    ticker_bg = resource.create_colored_texture(tc[1], tc[2], tc[3], tc[4])
+    tbr, tbg, tbb, tba = tc[1], tc[2], tc[3], tc[4]
     for r = 1, 3 do
         for c = 1, 3 do
             local key = "text_r" .. r .. "c" .. c
@@ -98,7 +99,7 @@ function node.render()
             draw_cell(grid_texts[1][c], x1, 0, x1 + cell_w, cell_h)
         end
 
-        ticker_bg:draw(0, mid_ticker_y, vw, mid_ticker_y + ticker_h)
+        ticker_bg:draw(0, mid_ticker_y, vw, mid_ticker_y + ticker_h, {r=tbr, g=tbg, b=tbb, a=tba})
         font:write(ticker_x, mid_ticker_y + (ticker_h - text_size) / 2, ticker_text, text_size, 1, 1, 1, 1)
 
         for c = 1, grid_cols do
@@ -106,7 +107,7 @@ function node.render()
             draw_cell(grid_texts[2][c], x1, bot_cell_y, x1 + cell_w, bot_cell_y + cell_h)
         end
 
-        ticker_bg:draw(0, bot_ticker_y, vw, vh)
+        ticker_bg:draw(0, bot_ticker_y, vw, vh, {r=tbr, g=tbg, b=tbb, a=tba})
         font:write(ticker_x, bot_ticker_y + (ticker_h - text_size) / 2, ticker_text, text_size, 1, 1, 1, 1)
     else
         -- Standard layout: rutnat(9/10) + ticker(1/10)
@@ -121,7 +122,7 @@ function node.render()
             end
         end
 
-        ticker_bg:draw(0, content_h, vw, vh)
+        ticker_bg:draw(0, content_h, vw, vh, {r=tbr, g=tbg, b=tbb, a=tba})
         font:write(ticker_x, content_h + (ticker_h - text_size) / 2, ticker_text, text_size, 1, 1, 1, 1)
     end
 end
