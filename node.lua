@@ -4,7 +4,9 @@ local font       = resource.load_font("font.ttf")
 local background = resource.load_image("background.jpg")
 local ticker_speed = 200
 local ticker_text  = "J26 Signage"
+local ticker_text2 = "J26 Signage"
 local ticker_x     = NATIVE_WIDTH
+local ticker_x2    = NATIVE_WIDTH
 local st           = util.screen_transform(0)
 local vw           = NATIVE_WIDTH
 local vh           = NATIVE_HEIGHT
@@ -33,6 +35,7 @@ util.json_watch("config.json", function(config)
         vh = NATIVE_HEIGHT
     end
     ticker_x = vw
+    ticker_x2 = vw
     grid_rows = config.grid_rows or 1
     grid_cols = config.grid_cols or 1
     layout = config.layout or 0
@@ -46,6 +49,9 @@ util.json_watch("config.json", function(config)
     end
     if config.ticker_text and config.ticker_text ~= "" then
         ticker_text = config.ticker_text
+    end
+    if config.ticker_text2 and config.ticker_text2 ~= "" then
+        ticker_text2 = config.ticker_text2
     end
 end)
 
@@ -81,10 +87,14 @@ function node.render()
     st()
     background:draw(0, 0, vw, vh)
 
-    -- Uppdatera ticker-position en gang per frame
+    -- Uppdatera ticker-positioner en gång per frame
     ticker_x = ticker_x - ticker_speed * dt
     local text_w = font:width(ticker_text, text_size)
     if ticker_x < -text_w then ticker_x = vw end
+
+    ticker_x2 = ticker_x2 - ticker_speed * dt
+    local text_w2 = font:width(ticker_text2, text_size)
+    if ticker_x2 < -text_w2 then ticker_x2 = vw end
 
     if layout == 1 then
         -- Delad layout: cell(4/10) + ticker(1/10) + cell(4/10) + ticker(1/10)
@@ -108,7 +118,7 @@ function node.render()
         end
 
         ticker_bg:draw(0, bot_ticker_y, vw, vh)
-        font:write(ticker_x, bot_ticker_y + (ticker_h - text_size) / 2, ticker_text, text_size, 1, 1, 1, 1)
+        font:write(ticker_x2, bot_ticker_y + (ticker_h - text_size) / 2, ticker_text2, text_size, 1, 1, 1, 1)
     else
         -- Standard layout: rutnat(9/10) + ticker(1/10)
         local content_h = vh - ticker_h

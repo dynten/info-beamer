@@ -18,7 +18,13 @@
         },
         {
             "name": "ticker_text",
-            "title": "Rulltext",
+            "title": "Rulltext 1",
+            "type": "string",
+            "default": "J26 Signage"
+        },
+        {
+            "name": "ticker_text2",
+            "title": "Rulltext 2 (delad layout)",
             "type": "string",
             "default": "J26 Signage"
         },
