@@ -2,6 +2,7 @@
     "name": "J26 Signage System",
     "version": "1.0.0",
     "description": "Stående skärm med zoner och realtidsticker",
+    "author": "Krabban",
     "managed": true,
     "options": "option.json"
 }

@@ -1,6 +1,12 @@
 Portrait Info-beamer Package
 =============================
 
+https://dynten.net/j26/J26-Signage-System.zip
+
+=============================
+
+
+
 Beskrivning
 -----------
 Detta paket är en grund för att köra digital signage på stående (portrait) skärmar med info-beamer på en Raspberry Pi 3.
