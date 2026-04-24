@@ -48,14 +48,8 @@ util.json_watch("config.json", function(config)
         for c = 1, 3 do
             local key = "image_r" .. r .. "c" .. c
             local asset = config[key]
-            local filename = nil
-            if type(asset) == "string" then
-                filename = asset
-            elseif type(asset) == "table" and asset.filename then
-                filename = asset.filename
-            end
-            if filename then
-                local ok, img = pcall(resource.load_image, filename)
+            if type(asset) == "table" and asset.asset_name and asset.asset_name ~= "empty.png" then
+                local ok, img = pcall(resource.load_image, asset.asset_name)
                 cell_images[r][c] = ok and img or nil
             else
                 cell_images[r][c] = nil
