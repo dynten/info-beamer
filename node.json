@@ -1,0 +1,10 @@
+{
+  "name": "J26 Signage System",
+  "version": "1.0.0",
+  "desc": "Stående skärm med zoner och realtidsticker",
+  "description": "Stående skärm med zoner och realtidsticker",
+  "author": "Krabban",
+  "main": "node.lua",
+  "options": "option.json",
+  "managed": true
+}
