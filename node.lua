@@ -2,8 +2,6 @@
 
 local font       = resource.load_font("font.ttf")
 local background = resource.load_image("background.jpg")
-local ticker_bg  = resource.create_colored_texture(0, 0, 0, 0.6)
-
 local ticker_speed = 200
 local ticker_text  = "J26 Signage"
 local ticker_x     = NATIVE_WIDTH
