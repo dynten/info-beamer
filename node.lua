@@ -15,9 +15,12 @@ util.json_watch("config.json", function(config)
     ticker_speed = config.ticker_speed or 200
     local rot = config.rotation or 0
     st = util.screen_transform(rot)
-    if rot == 90 or rot == 270 then
+    if rot == 90 then
         vw = NATIVE_HEIGHT
         vh = NATIVE_WIDTH
+    elseif rot == 270 then
+        vw = NATIVE_WIDTH
+        vh = NATIVE_HEIGHT
     else
         vw = NATIVE_WIDTH
         vh = NATIVE_HEIGHT
