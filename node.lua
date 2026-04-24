@@ -6,7 +6,7 @@ local background = resource.load_image("background.jpg")
 local ticker_speed = 200
 local ticker_text  = "J26 Signage"
 local ticker_x     = NATIVE_WIDTH
-local ticker_h     = 70
+local ticker_h     = 80
 local st           = util.screen_transform(0)
 local vw           = NATIVE_WIDTH
 local vh           = NATIVE_HEIGHT
@@ -19,8 +19,8 @@ util.json_watch("config.json", function(config)
         vw = NATIVE_HEIGHT
         vh = NATIVE_WIDTH
     elseif rot == 270 then
-        vw = NATIVE_WIDTH
-        vh = NATIVE_HEIGHT
+        vw = NATIVE_HEIGHT
+        vh = NATIVE_WIDTH
     else
         vw = NATIVE_WIDTH
         vh = NATIVE_HEIGHT
