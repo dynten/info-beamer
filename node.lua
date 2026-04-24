@@ -20,7 +20,7 @@ util.json_watch("config.json", function(config)
         vw = NATIVE_WIDTH
     elseif rot == 270 then -- -90
         vw = NATIVE_HEIGHT
---        vh = NATIVE_WIDTH
+        vh = NATIVE_WIDTH
     else
         vw = NATIVE_WIDTH
         vh = NATIVE_HEIGHT
