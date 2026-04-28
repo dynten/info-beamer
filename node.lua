@@ -22,6 +22,7 @@ local vw           = NATIVE_WIDTH
 local vh           = NATIVE_HEIGHT
 local grid_rows    = 1
 local grid_cols    = 1
+local bg_color     = {0, 0, 0, 1}
 
 local grid_texts = {}
 for r = 1, 3 do
@@ -36,6 +37,10 @@ for r = 1, 3 do
 end
 
 util.json_watch("config.json", function(config)
+    if config.background_color then
+        bg_color = config.background_color
+    end
+
     ticker_speed = math.max(0, tonumber(config.ticker_speed) or 200)
     ticker_count = tonumber(config.ticker_count) or 1
     local rot = tonumber(config.rotation) or 0
@@ -89,12 +94,12 @@ local function draw_cell(text, image, x1, y1, x2, y2)
     end
     if text ~= "" then
         local size = ch * 0.35
-        local tw = font:width(text, size)
-        while tw > cw * 0.88 and size > 8 do
+        local tw = font and font:width(text, size) or 0
+        while font and tw > cw * 0.88 and size > 8 do
             size = size * 0.92
             tw = font:width(text, size)
         end
-        local tr, tg, tb = 0.05, 0.1, 0.35
+        local tr, tg, tb = 0.5, 0.5, 0.5
         if image then tr, tg, tb = 1, 1, 1 end
         if font then
             font:write(x1 + (cw - tw) / 2, y1 + (ch - size) / 2, text, size, tr, tg, tb, 1)
@@ -128,7 +133,7 @@ function node.render()
     local tw1       = font and font:width(ticker_text,  text_size) or 0
     local tw2       = font and font:width(ticker2_text, text_size) or 0
 
-    gl.clear(0, 0, 0, 1)
+    gl.clear(bg_color[1], bg_color[2], bg_color[3], bg_color[4] or 1)
     st()
     if backgrounds[ticker_count] then
         backgrounds[ticker_count]:draw(0, 0, vw, vh)
