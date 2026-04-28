@@ -10,6 +10,13 @@
             "options": [[0,"Ingen"],[90,"+90"],[270,"-90"]]
         },
         {
+            "name": "ticker_count",
+            "title": "Antal tickers",
+            "type": "select",
+            "default": 1,
+            "options": [[0,"Ingen"],[1,"En (längst ner)"],[2,"Två (mitten + botten)"]]
+        },
+        {
             "name": "ticker_text",
             "title": "Rulltext",
             "type": "string",
@@ -22,7 +29,7 @@
             "default": 200
         },
         { "title": "Zoner", "type": "section",
-          "intro": "Dela contentområdet i rader och kolumner. Texter visas bara om de ligger inom valt rutnät." },
+          "intro": "Dela contentområdet i rader och kolumner. Med 2 tickers används alltid 1 rad per sektion – rad 1 = övre sektion, rad 2 = nedre sektion. Antal rader gäller bara för 0 eller 1 ticker." },
         {
             "name": "grid_rows",
             "title": "Antal rader",

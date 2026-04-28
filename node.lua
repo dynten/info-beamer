@@ -1,17 +1,18 @@
-﻿gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
+gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
-local font       = resource.load_font("font.ttf")
-local background = resource.load_image("background.jpg")
+local font         = resource.load_font("font.ttf")
+local background   = resource.load_image("background.jpg")
 local ticker_speed = 200
+local ticker_count = 1
 local ticker_text  = "J26 Signage"
 local ticker_x     = NATIVE_WIDTH
+local ticker2_x    = NATIVE_WIDTH / 2  -- börjar fasförskjutet
 local st           = util.screen_transform(0)
 local vw           = NATIVE_WIDTH
 local vh           = NATIVE_HEIGHT
 local grid_rows    = 1
 local grid_cols    = 1
 
--- Initialisera grid-texter och bilder med tomma värden
 local grid_texts = {}
 for r = 1, 3 do
     grid_texts[r] = {}
@@ -26,6 +27,7 @@ end
 
 util.json_watch("config.json", function(config)
     ticker_speed = math.max(0, tonumber(config.ticker_speed) or 200)
+    ticker_count = config.ticker_count or 1
     local rot = config.rotation or 0
     st = util.screen_transform(rot)
     if rot == 90 or rot == 270 then
@@ -35,7 +37,8 @@ util.json_watch("config.json", function(config)
         vw = NATIVE_WIDTH
         vh = NATIVE_HEIGHT
     end
-    ticker_x = vw
+    ticker_x  = vw
+    ticker2_x = math.floor(vw / 2)
     grid_rows = math.max(1, math.min(3, config.grid_rows or 1))
     grid_cols = math.max(1, math.min(3, config.grid_cols or 1))
     for r = 1, 3 do
@@ -86,6 +89,18 @@ local function draw_cell(text, image, x1, y1, x2, y2)
     end
 end
 
+local function draw_row(row, cols, x_off, y_off, zone_w, zone_h)
+    local cell_w = zone_w / cols
+    for c = 1, cols do
+        local x1 = x_off + (c - 1) * cell_w
+        draw_cell(grid_texts[row][c], cell_images[row][c], x1, y_off, x1 + cell_w, y_off + zone_h)
+    end
+end
+
+local function draw_ticker_line(tx, ty, text_size, th)
+    font:write(tx, ty + (th - text_size) / 2, ticker_text, text_size, 1, 1, 1, 1)
+end
+
 local last_time = sys.now()
 
 function node.render()
@@ -93,31 +108,61 @@ function node.render()
     local dt  = math.min(now - last_time, 0.05)
     last_time = now
 
-    local ticker_h   = math.floor(vh / 10)
-    local content_h  = vh - ticker_h
+    local ticker_h  = math.floor(vh / 10)
+    local text_size = ticker_h * 0.7
+    local text_w    = font:width(ticker_text, text_size)
 
     gl.clear(0, 0, 0, 1)
     st()
-
-    -- Bakgrundsbild
     background:draw(0, 0, vw, vh)
 
-    -- Rutnät med text
-    local cell_w = vw / grid_cols
-    local cell_h = content_h / grid_rows
-    for r = 1, grid_rows do
-        for c = 1, grid_cols do
-            local x1 = (c - 1) * cell_w
-            local y1 = (r - 1) * cell_h
-            draw_cell(grid_texts[r][c], cell_images[r][c], x1, y1, x1 + cell_w, y1 + cell_h)
+    if ticker_count == 0 then
+        -- Ingen ticker – hela skärmen används för celler
+        local cell_w = vw / grid_cols
+        local cell_h = vh / grid_rows
+        for r = 1, grid_rows do
+            for c = 1, grid_cols do
+                local x1 = (c - 1) * cell_w
+                local y1 = (r - 1) * cell_h
+                draw_cell(grid_texts[r][c], cell_images[r][c], x1, y1, x1 + cell_w, y1 + cell_h)
+            end
         end
-    end
 
-    -- Ticker-bakgrund och text
-    -- ticker_bg:draw(0, content_h, vw, vh)
-    ticker_x = ticker_x - ticker_speed * dt
-    local text_size = ticker_h * 0.7
-    local text_w = font:width(ticker_text, text_size)
-    if ticker_x < -text_w then ticker_x = vw end
-    font:write(ticker_x, content_h + (ticker_h - text_size) / 2, ticker_text, text_size, 1, 1, 1, 1)
+    elseif ticker_count == 1 then
+        -- En ticker längst ner
+        local content_h = vh - ticker_h
+        local cell_w = vw / grid_cols
+        local cell_h = content_h / grid_rows
+        for r = 1, grid_rows do
+            for c = 1, grid_cols do
+                local x1 = (c - 1) * cell_w
+                local y1 = (r - 1) * cell_h
+                draw_cell(grid_texts[r][c], cell_images[r][c], x1, y1, x1 + cell_w, y1 + cell_h)
+            end
+        end
+        ticker_x = ticker_x - ticker_speed * dt
+        if ticker_x < -text_w then ticker_x = vw end
+        draw_ticker_line(ticker_x, content_h, text_size, ticker_h)
+
+    elseif ticker_count == 2 then
+        -- Två tickers: en mitt på skärmen, en längst ner
+        -- Rad 1 = övre sektion (topp → mellanticker)
+        -- Rad 2 = nedre sektion (mellanticker → nedreticker)
+        local section_h      = math.floor((vh - 2 * ticker_h) / 2)
+        local mid_ticker_y   = section_h
+        local bottom_start   = section_h + ticker_h
+        local bottom_ticker_y = vh - ticker_h
+
+        draw_row(1, grid_cols, 0, 0, vw, section_h)
+
+        ticker2_x = ticker2_x - ticker_speed * dt
+        if ticker2_x < -text_w then ticker2_x = vw end
+        draw_ticker_line(ticker2_x, mid_ticker_y, text_size, ticker_h)
+
+        draw_row(2, grid_cols, 0, bottom_start, vw, bottom_ticker_y - bottom_start)
+
+        ticker_x = ticker_x - ticker_speed * dt
+        if ticker_x < -text_w then ticker_x = vw end
+        draw_ticker_line(ticker_x, bottom_ticker_y, text_size, ticker_h)
+    end
 end
