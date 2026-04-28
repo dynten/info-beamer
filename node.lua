@@ -90,20 +90,20 @@ local function draw_cell(text, image, x1, y1, x2, y2)
     local cw = x2 - x1
     local ch = y2 - y1
     if image then
-        pcall(image.draw, image, x1 + 2, y1 + 2, x2 - 2, y2 - 2)
+        pcall(image.draw, image, math.floor(x1 + 2), math.floor(y1 + 2), math.floor(x2 - 2), math.floor(y2 - 2))
     end
     if text ~= "" then
         local text_str = tostring(text)
         local size = ch * 0.35
         local tw = font and font:width(text_str, size) or 0
-        while font and tw > cw * 0.88 and size > 8 do
-            size = size * 0.92
+        while font and tw > cw * 0.9 and size > 10 do
+            size = math.max(10, size * 0.9)
             tw = font:width(text_str, size)
         end
         local tr, tg, tb = 0.5, 0.5, 0.5
         if image then tr, tg, tb = 1, 1, 1 end
         if font then
-            font:write(x1 + (cw - tw) / 2, y1 + (ch - size) / 2, text_str, size, tr, tg, tb, 1)
+            font:write(math.floor(x1 + (cw - tw) / 2), math.floor(y1 + (ch - size) / 2), text_str, size, tr, tg, tb, 1)
         end
     end
 end
@@ -117,8 +117,8 @@ local function draw_row(row, cols, x_off, y_off, zone_w, zone_h)
 end
 
 local function draw_ticker_line(tx, ty, text_size, th, txt)
-    if font then
-        font:write(tx, ty + (th - text_size) / 2, tostring(txt), text_size, 1, 1, 1, 1)
+    if font and text_size > 0 then
+        font:write(math.floor(tx), math.floor(ty + (th - text_size) / 2), tostring(txt), text_size, 1, 1, 1, 1)
     end
 end
 
@@ -129,21 +129,22 @@ function node.render()
     local dt  = math.min(now - last_time, 0.05)
     last_time = now
 
-    local t1_str = tostring(ticker_text)
-    local t2_str = tostring(ticker2_text)
-
-    local ticker_h  = math.floor(vh / 10)
-    local text_size = ticker_h * 0.7
-    local tw1       = font and font:width(t1_str, text_size) or 0
-    local tw2       = font and font:width(t2_str, text_size) or 0
-
     local r = bg_color[1] or bg_color.r or 0
     local g = bg_color[2] or bg_color.g or 0
     local b = bg_color[3] or bg_color.b or 0
     local a = bg_color[4] or bg_color.a or 1
+
+    st() -- Aktivera rotationen först av allt
     gl.clear(r, g, b, a)
 
-    st()
+    local t1_str = tostring(ticker_text)
+    local t2_str = tostring(ticker2_text)
+
+    local ticker_h  = math.max(10, math.floor(vh / 10))
+    local text_size = ticker_h * 0.7
+    local tw1       = (font and text_size > 0) and font:width(t1_str, text_size) or 0
+    local tw2       = (font and text_size > 0) and font:width(t2_str, text_size) or 0
+
     if backgrounds[ticker_count] then
         backgrounds[ticker_count]:draw(0, 0, vw, vh)
     end
