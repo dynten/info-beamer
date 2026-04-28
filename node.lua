@@ -1,12 +1,18 @@
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
-local font         = resource.load_font("font.ttf")
-local background   = resource.load_image("background.jpg")
-local ticker_speed = 200
-local ticker_count = 1
-local ticker_text  = "J26 Signage"
-local ticker_x     = NATIVE_WIDTH
-local ticker2_x    = NATIVE_WIDTH / 2  -- börjar fasförskjutet
+local font        = resource.load_font("font.ttf")
+local bg_fallback = resource.load_image("background.jpg")
+local backgrounds = {}
+for i = 0, 2 do
+    local ok, img = pcall(resource.load_image, "background_" .. i .. ".jpg")
+    backgrounds[i] = ok and img or bg_fallback
+end
+local ticker_speed  = 200
+local ticker_count  = 1
+local ticker_text   = "J26 Signage"
+local ticker2_text  = "J26 Signage"
+local ticker_x      = NATIVE_WIDTH
+local ticker2_x     = NATIVE_WIDTH / 2  -- börjar fasförskjutet
 local st           = util.screen_transform(0)
 local vw           = NATIVE_WIDTH
 local vh           = NATIVE_HEIGHT
@@ -62,6 +68,7 @@ util.json_watch("config.json", function(config)
     if config.ticker_text and config.ticker_text ~= "" then
         ticker_text = config.ticker_text
     end
+    ticker2_text = (config.ticker2_text and config.ticker2_text ~= "") and config.ticker2_text or ticker_text
 end)
 
 util.file_watch("ticker.txt", function(content)
@@ -97,8 +104,8 @@ local function draw_row(row, cols, x_off, y_off, zone_w, zone_h)
     end
 end
 
-local function draw_ticker_line(tx, ty, text_size, th)
-    font:write(tx, ty + (th - text_size) / 2, ticker_text, text_size, 1, 1, 1, 1)
+local function draw_ticker_line(tx, ty, text_size, th, txt)
+    font:write(tx, ty + (th - text_size) / 2, txt, text_size, 1, 1, 1, 1)
 end
 
 local last_time = sys.now()
@@ -110,11 +117,12 @@ function node.render()
 
     local ticker_h  = math.floor(vh / 10)
     local text_size = ticker_h * 0.7
-    local text_w    = font:width(ticker_text, text_size)
+    local tw1       = font:width(ticker_text,  text_size)
+    local tw2       = font:width(ticker2_text, text_size)
 
     gl.clear(0, 0, 0, 1)
     st()
-    background:draw(0, 0, vw, vh)
+    backgrounds[ticker_count]:draw(0, 0, vw, vh)
 
     if ticker_count == 0 then
         -- Ingen ticker – hela skärmen används för celler
@@ -141,28 +149,28 @@ function node.render()
             end
         end
         ticker_x = ticker_x - ticker_speed * dt
-        if ticker_x < -text_w then ticker_x = vw end
-        draw_ticker_line(ticker_x, content_h, text_size, ticker_h)
+        if ticker_x < -tw1 then ticker_x = vw end
+        draw_ticker_line(ticker_x, content_h, text_size, ticker_h, ticker_text)
 
     elseif ticker_count == 2 then
         -- Två tickers: en mitt på skärmen, en längst ner
         -- Rad 1 = övre sektion (topp → mellanticker)
         -- Rad 2 = nedre sektion (mellanticker → nedreticker)
-        local section_h      = math.floor((vh - 2 * ticker_h) / 2)
-        local mid_ticker_y   = section_h
-        local bottom_start   = section_h + ticker_h
+        local section_h       = math.floor((vh - 2 * ticker_h) / 2)
+        local mid_ticker_y    = section_h
+        local bottom_start    = section_h + ticker_h
         local bottom_ticker_y = vh - ticker_h
 
         draw_row(1, grid_cols, 0, 0, vw, section_h)
 
         ticker2_x = ticker2_x - ticker_speed * dt
-        if ticker2_x < -text_w then ticker2_x = vw end
-        draw_ticker_line(ticker2_x, mid_ticker_y, text_size, ticker_h)
+        if ticker2_x < -tw2 then ticker2_x = vw end
+        draw_ticker_line(ticker2_x, mid_ticker_y, text_size, ticker_h, ticker2_text)
 
         draw_row(2, grid_cols, 0, bottom_start, vw, bottom_ticker_y - bottom_start)
 
         ticker_x = ticker_x - ticker_speed * dt
-        if ticker_x < -text_w then ticker_x = vw end
-        draw_ticker_line(ticker_x, bottom_ticker_y, text_size, ticker_h)
+        if ticker_x < -tw1 then ticker_x = vw end
+        draw_ticker_line(ticker_x, bottom_ticker_y, text_size, ticker_h, ticker_text)
     end
 end

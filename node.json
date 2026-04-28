@@ -18,9 +18,15 @@
         },
         {
             "name": "ticker_text",
-            "title": "Rulltext",
+            "title": "Rulltext (nedre ticker)",
             "type": "string",
             "default": "J26 Signage"
+        },
+        {
+            "name": "ticker2_text",
+            "title": "Rulltext (mellersta ticker, lämna tom = samma som nedre)",
+            "type": "string",
+            "default": ""
         },
         {
             "name": "ticker_speed",
