@@ -66,11 +66,11 @@ util.json_watch("config.json", function(config)
         for c = 1, 3 do
             local key = "image_r" .. r .. "c" .. c
             local asset = config[key]
-            if type(asset) == "table" and asset.asset_name and asset.asset_name ~= "empty.png" then
-                local ok, img = pcall(resource.load_image, asset.asset_name)
-                cell_images[r][c] = ok and img or nil
-            else
-                cell_images[r][c] = nil
+            cell_images[r][c] = nil
+            local filename = type(asset) == "string" and asset or (type(asset) == "table" and asset.asset_name)
+            if filename and filename ~= "" and filename ~= "empty.png" then
+                local ok, img = pcall(resource.load_image, filename)
+                if ok then cell_images[r][c] = img end
             end
         end
     end
@@ -90,19 +90,20 @@ local function draw_cell(text, image, x1, y1, x2, y2)
     local cw = x2 - x1
     local ch = y2 - y1
     if image then
-        pcall(image.draw, image, x1 + 4, y1 + 4, x2 - 4, y2 - 4)
+        pcall(image.draw, image, x1 + 2, y1 + 2, x2 - 2, y2 - 2)
     end
     if text ~= "" then
+        local text_str = tostring(text)
         local size = ch * 0.35
-        local tw = font and font:width(text, size) or 0
+        local tw = font and font:width(text_str, size) or 0
         while font and tw > cw * 0.88 and size > 8 do
             size = size * 0.92
-            tw = font:width(text, size)
+            tw = font:width(text_str, size)
         end
         local tr, tg, tb = 0.5, 0.5, 0.5
         if image then tr, tg, tb = 1, 1, 1 end
         if font then
-            font:write(x1 + (cw - tw) / 2, y1 + (ch - size) / 2, text, size, tr, tg, tb, 1)
+            font:write(x1 + (cw - tw) / 2, y1 + (ch - size) / 2, text_str, size, tr, tg, tb, 1)
         end
     end
 end
@@ -117,7 +118,7 @@ end
 
 local function draw_ticker_line(tx, ty, text_size, th, txt)
     if font then
-        font:write(tx, ty + (th - text_size) / 2, txt, text_size, 1, 1, 1, 1)
+        font:write(tx, ty + (th - text_size) / 2, tostring(txt), text_size, 1, 1, 1, 1)
     end
 end
 
@@ -128,12 +129,20 @@ function node.render()
     local dt  = math.min(now - last_time, 0.05)
     last_time = now
 
+    local t1_str = tostring(ticker_text)
+    local t2_str = tostring(ticker2_text)
+
     local ticker_h  = math.floor(vh / 10)
     local text_size = ticker_h * 0.7
-    local tw1       = font and font:width(ticker_text,  text_size) or 0
-    local tw2       = font and font:width(ticker2_text, text_size) or 0
+    local tw1       = font and font:width(t1_str, text_size) or 0
+    local tw2       = font and font:width(t2_str, text_size) or 0
 
-    gl.clear(bg_color[1], bg_color[2], bg_color[3], bg_color[4] or 1)
+    local r = bg_color[1] or bg_color.r or 0
+    local g = bg_color[2] or bg_color.g or 0
+    local b = bg_color[3] or bg_color.b or 0
+    local a = bg_color[4] or bg_color.a or 1
+    gl.clear(r, g, b, a)
+
     st()
     if backgrounds[ticker_count] then
         backgrounds[ticker_count]:draw(0, 0, vw, vh)
@@ -165,7 +174,7 @@ function node.render()
         end
         ticker_x = ticker_x - ticker_speed * dt
         if ticker_x < -tw1 then ticker_x = vw end
-        draw_ticker_line(ticker_x, content_h, text_size, ticker_h, ticker_text)
+        draw_ticker_line(ticker_x, content_h, text_size, ticker_h, t1_str)
 
     elseif ticker_count == 2 then
         -- Två tickers: en mitt på skärmen, en längst ner
@@ -180,12 +189,12 @@ function node.render()
 
         ticker2_x = ticker2_x - ticker_speed * dt
         if ticker2_x < -tw2 then ticker2_x = vw end
-        draw_ticker_line(ticker2_x, mid_ticker_y, text_size, ticker_h, ticker2_text)
+        draw_ticker_line(ticker2_x, mid_ticker_y, text_size, ticker_h, t2_str)
 
         draw_row(2, grid_cols, 0, bottom_start, vw, bottom_ticker_y - bottom_start)
 
         ticker_x = ticker_x - ticker_speed * dt
         if ticker_x < -tw1 then ticker_x = vw end
-        draw_ticker_line(ticker_x, bottom_ticker_y, text_size, ticker_h, ticker_text)
+        draw_ticker_line(ticker_x, bottom_ticker_y, text_size, ticker_h, t1_str)
     end
 end
