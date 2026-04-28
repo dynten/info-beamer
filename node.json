@@ -1,10 +1,10 @@
 {
     "name": "J26 Signage System",
     "options": [
-        { "title": "Instaellningar", "type": "section" },
+        { "title": "Inställningar", "type": "section" },
         {
             "name": "rotation",
-            "title": "Skaermrotation",
+            "title": "Skärmrotation",
             "type": "select",
             "default": 0,
             "options": [[0,"Ingen"],[90,"+90"],[270,"-90"]]
@@ -17,12 +17,12 @@
         },
         {
             "name": "ticker_speed",
-            "title": "Hastighet pa rulltext (px/s)",
+            "title": "Hastighet på rulltext (px/s)",
             "type": "integer",
             "default": 200
         },
         { "title": "Zoner", "type": "section",
-          "intro": "Dela contentomradet i rader och kolumner. Texter visas bara om de ligger inom valt rutnät." },
+          "intro": "Dela contentområdet i rader och kolumner. Texter visas bara om de ligger inom valt rutnät." },
         {
             "name": "grid_rows",
             "title": "Antal rader",
@@ -38,7 +38,7 @@
             "options": [[1,"1 (hel)"],[2,"2 (halvt)"],[3,"3 (tredjedelar)"]]
         },
         { "title": "Zontexter", "type": "section",
-          "intro": "Skriv text for varje zon. Tom text visas inte." },
+          "intro": "Skriv text för varje zon. Tom text visas inte." },
         { "name": "text_r1c1", "title": "Rad 1 - Kol 1", "type": "string", "default": "" },
         { "name": "text_r1c2", "title": "Rad 1 - Kol 2", "type": "string", "default": "" },
         { "name": "text_r1c3", "title": "Rad 1 - Kol 3", "type": "string", "default": "" },

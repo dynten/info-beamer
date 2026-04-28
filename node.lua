@@ -25,7 +25,7 @@ for r = 1, 3 do
 end
 
 util.json_watch("config.json", function(config)
-    ticker_speed = config.ticker_speed or 200
+    ticker_speed = math.max(0, tonumber(config.ticker_speed) or 200)
     local rot = config.rotation or 0
     st = util.screen_transform(rot)
     if rot == 90 or rot == 270 then
@@ -36,8 +36,8 @@ util.json_watch("config.json", function(config)
         vh = NATIVE_HEIGHT
     end
     ticker_x = vw
-    grid_rows = config.grid_rows or 1
-    grid_cols = config.grid_cols or 1
+    grid_rows = math.max(1, math.min(3, config.grid_rows or 1))
+    grid_cols = math.max(1, math.min(3, config.grid_cols or 1))
     for r = 1, 3 do
         for c = 1, 3 do
             local key = "text_r" .. r .. "c" .. c
@@ -90,7 +90,7 @@ local last_time = sys.now()
 
 function node.render()
     local now = sys.now()
-    local dt  = now - last_time
+    local dt  = math.min(now - last_time, 0.05)
     last_time = now
 
     local ticker_h   = math.floor(vh / 10)
