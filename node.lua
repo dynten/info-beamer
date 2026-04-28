@@ -1,7 +1,11 @@
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
-local font        = resource.load_font("font.ttf")
-local bg_fallback = resource.load_image("background.jpg")
+local ok, font = pcall(resource.load_font, "font.ttf")
+if not ok then font = nil end
+
+local ok, bg_fallback = pcall(resource.load_image, "background.jpg")
+if not ok then bg_fallback = nil end
+
 local backgrounds = {}
 for i = 0, 2 do
     local ok, img = pcall(resource.load_image, "background_" .. i .. ".jpg")
@@ -33,8 +37,8 @@ end
 
 util.json_watch("config.json", function(config)
     ticker_speed = math.max(0, tonumber(config.ticker_speed) or 200)
-    ticker_count = config.ticker_count or 1
-    local rot = config.rotation or 0
+    ticker_count = tonumber(config.ticker_count) or 1
+    local rot = tonumber(config.rotation) or 0
     st = util.screen_transform(rot)
     if rot == 90 or rot == 270 then
         vw = NATIVE_HEIGHT
@@ -45,8 +49,8 @@ util.json_watch("config.json", function(config)
     end
     ticker_x  = vw
     ticker2_x = math.floor(vw / 2)
-    grid_rows = math.max(1, math.min(3, config.grid_rows or 1))
-    grid_cols = math.max(1, math.min(3, config.grid_cols or 1))
+    grid_rows = math.max(1, math.min(3, tonumber(config.grid_rows) or 1))
+    grid_cols = math.max(1, math.min(3, tonumber(config.grid_cols) or 1))
     for r = 1, 3 do
         for c = 1, 3 do
             local key = "text_r" .. r .. "c" .. c
@@ -81,7 +85,7 @@ local function draw_cell(text, image, x1, y1, x2, y2)
     local cw = x2 - x1
     local ch = y2 - y1
     if image then
-        image:draw(x1 + 4, y1 + 4, x2 - 4, y2 - 4)
+        pcall(image.draw, image, x1 + 4, y1 + 4, x2 - 4, y2 - 4)
     end
     if text ~= "" then
         local size = ch * 0.35
@@ -92,7 +96,9 @@ local function draw_cell(text, image, x1, y1, x2, y2)
         end
         local tr, tg, tb = 0.05, 0.1, 0.35
         if image then tr, tg, tb = 1, 1, 1 end
-        font:write(x1 + (cw - tw) / 2, y1 + (ch - size) / 2, text, size, tr, tg, tb, 1)
+        if font then
+            font:write(x1 + (cw - tw) / 2, y1 + (ch - size) / 2, text, size, tr, tg, tb, 1)
+        end
     end
 end
 
@@ -105,7 +111,9 @@ local function draw_row(row, cols, x_off, y_off, zone_w, zone_h)
 end
 
 local function draw_ticker_line(tx, ty, text_size, th, txt)
-    font:write(tx, ty + (th - text_size) / 2, txt, text_size, 1, 1, 1, 1)
+    if font then
+        font:write(tx, ty + (th - text_size) / 2, txt, text_size, 1, 1, 1, 1)
+    end
 end
 
 local last_time = sys.now()
@@ -117,12 +125,14 @@ function node.render()
 
     local ticker_h  = math.floor(vh / 10)
     local text_size = ticker_h * 0.7
-    local tw1       = font:width(ticker_text,  text_size)
-    local tw2       = font:width(ticker2_text, text_size)
+    local tw1       = font and font:width(ticker_text,  text_size) or 0
+    local tw2       = font and font:width(ticker2_text, text_size) or 0
 
     gl.clear(0, 0, 0, 1)
     st()
-    backgrounds[ticker_count]:draw(0, 0, vw, vh)
+    if backgrounds[ticker_count] then
+        backgrounds[ticker_count]:draw(0, 0, vw, vh)
+    end
 
     if ticker_count == 0 then
         -- Ingen ticker – hela skärmen används för celler
