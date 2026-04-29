@@ -1,17 +1,6 @@
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
-local function apply_rotation(rot)
-    if rot == 90 then
-        gl.translate(NATIVE_WIDTH, 0)
-        gl.rotate(90, 0, 0, 1)
-    elseif rot == 270 then
-        gl.translate(0, NATIVE_HEIGHT)
-        gl.rotate(270, 0, 0, 1)
-    elseif rot == 180 then
-        gl.translate(NATIVE_WIDTH, NATIVE_HEIGHT)
-        gl.rotate(180, 0, 0, 1)
-    end
-end
+local screen_transform = util.screen_transform(0)
 
 local ok, font = pcall(resource.load_font, "font.ttf")
 if not ok then font = nil end
@@ -57,7 +46,8 @@ util.json_watch("config.json", function(config)
     ticker_speed = math.max(0, tonumber(config.ticker_speed) or 200)
     ticker_count = tonumber(config.ticker_count) or 1
     local rot = tonumber(config.rotation) or 0
-    rot_value = rot
+    gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
+    screen_transform = util.screen_transform(rot)
     if rot == 90 or rot == 270 then
         vw = NATIVE_HEIGHT
         vh = NATIVE_WIDTH
@@ -148,7 +138,7 @@ function node.render()
     local a = bg_color[4] or bg_color.a or 1
 
     gl.clear(r, g, b, a)
-    apply_rotation(rot_value)
+    screen_transform()
 
     local t1_str = tostring(ticker_text)
     local t2_str = tostring(ticker2_text)
