@@ -19,7 +19,6 @@ local ticker_text   = "J26 Signage"
 local ticker2_text  = "J26 Signage"
 local ticker_x      = NATIVE_WIDTH
 local ticker2_x     = NATIVE_WIDTH / 2  -- börjar fasförskjutet
-local rot_flip     = false
 local vw           = NATIVE_WIDTH
 local vh           = NATIVE_HEIGHT
 local grid_rows    = 1
@@ -47,7 +46,6 @@ util.json_watch("config.json", function(config)
     ticker_count = tonumber(config.ticker_count) or 1
     local rot = tonumber(config.rotation) or 0
     screen_transform = util.screen_transform(rot)
-    rot_flip = (rot == 270)
     if rot == 90 or rot == 270 then
         vw = NATIVE_HEIGHT
         vh = NATIVE_WIDTH
@@ -165,59 +163,38 @@ function node.render()
         end
 
     elseif ticker_count == 1 then
-        ticker_x = ticker_x - ticker_speed * dt
-        if ticker_x < -tw1 then ticker_x = vw end
-        if not rot_flip then
-            -- Ticker längst ner
-            local content_h = vh - ticker_h
-            local cell_w = vw / grid_cols
-            local cell_h = content_h / grid_rows
-            for r = 1, grid_rows do
-                for c = 1, grid_cols do
-                    local x1 = (c - 1) * cell_w
-                    local y1 = (r - 1) * cell_h
-                    draw_cell(grid_texts[r][c], cell_images[r][c], x1, y1, x1 + cell_w, y1 + cell_h)
-                end
-            end
-            draw_ticker_line(ticker_x, content_h, text_size, ticker_h, t1_str)
-        else
-            -- 270°: ticker vid y=0 (fysisk botten), innehåll ovanför
-            local cell_w = vw / grid_cols
-            local cell_h = (vh - ticker_h) / grid_rows
-            draw_ticker_line(ticker_x, 0, text_size, ticker_h, t1_str)
-            for r = 1, grid_rows do
-                for c = 1, grid_cols do
-                    local x1 = (c - 1) * cell_w
-                    local y1 = ticker_h + (r - 1) * cell_h
-                    draw_cell(grid_texts[r][c], cell_images[r][c], x1, y1, x1 + cell_w, y1 + cell_h)
-                end
+        -- En ticker längst ner
+        local content_h = vh - ticker_h
+        local cell_w = vw / grid_cols
+        local cell_h = content_h / grid_rows
+        for r = 1, grid_rows do
+            for c = 1, grid_cols do
+                local x1 = (c - 1) * cell_w
+                local y1 = (r - 1) * cell_h
+                draw_cell(grid_texts[r][c], cell_images[r][c], x1, y1, x1 + cell_w, y1 + cell_h)
             end
         end
+        ticker_x = ticker_x - ticker_speed * dt
+        if ticker_x < -tw1 then ticker_x = vw end
+        draw_ticker_line(ticker_x, content_h, text_size, ticker_h, t1_str)
 
     elseif ticker_count == 2 then
-        local section_h = math.floor((vh - 2 * ticker_h) / 2)
+        -- Två tickers: en mitt på skärmen, en längst ner
+        local section_h       = math.floor((vh - 2 * ticker_h) / 2)
+        local mid_ticker_y    = section_h
+        local bottom_start    = section_h + ticker_h
+        local bottom_ticker_y = vh - ticker_h
+
+        draw_row(1, grid_cols, 0, 0, vw, section_h)
+
         ticker2_x = ticker2_x - ticker_speed * dt
         if ticker2_x < -tw2 then ticker2_x = vw end
+        draw_ticker_line(ticker2_x, mid_ticker_y, text_size, ticker_h, t2_str)
+
+        draw_row(2, grid_cols, 0, bottom_start, vw, bottom_ticker_y - bottom_start)
+
         ticker_x = ticker_x - ticker_speed * dt
         if ticker_x < -tw1 then ticker_x = vw end
-        if not rot_flip then
-            -- Normal: sektion1, ticker2, sektion2, ticker1
-            local mid_ticker_y    = section_h
-            local bottom_start    = section_h + ticker_h
-            local bottom_ticker_y = vh - ticker_h
-            draw_row(1, grid_cols, 0, 0, vw, section_h)
-            draw_ticker_line(ticker2_x, mid_ticker_y, text_size, ticker_h, t2_str)
-            draw_row(2, grid_cols, 0, bottom_start, vw, bottom_ticker_y - bottom_start)
-            draw_ticker_line(ticker_x, bottom_ticker_y, text_size, ticker_h, t1_str)
-        else
-            -- 270°: ticker1 vid y=0 (fysisk botten), sektion2, ticker2, sektion1
-            local section2_start = ticker_h
-            local mid_ticker_y   = ticker_h + section_h
-            local section1_start = 2 * ticker_h + section_h
-            draw_ticker_line(ticker_x, 0, text_size, ticker_h, t1_str)
-            draw_row(2, grid_cols, 0, section2_start, vw, section_h)
-            draw_ticker_line(ticker2_x, mid_ticker_y, text_size, ticker_h, t2_str)
-            draw_row(1, grid_cols, 0, section1_start, vw, vh - section1_start)
-        end
+        draw_ticker_line(ticker_x, bottom_ticker_y, text_size, ticker_h, t1_str)
     end
 end
