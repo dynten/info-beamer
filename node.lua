@@ -1,5 +1,18 @@
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
+local function apply_rotation(rot)
+    if rot == 90 then
+        gl.translate(NATIVE_WIDTH, 0)
+        gl.rotate(90, 0, 0, 1)
+    elseif rot == 270 then
+        gl.translate(0, NATIVE_HEIGHT)
+        gl.rotate(270, 0, 0, 1)
+    elseif rot == 180 then
+        gl.translate(NATIVE_WIDTH, NATIVE_HEIGHT)
+        gl.rotate(180, 0, 0, 1)
+    end
+end
+
 local ok, font = pcall(resource.load_font, "font.ttf")
 if not ok then font = nil end
 
@@ -135,7 +148,7 @@ function node.render()
     local a = bg_color[4] or bg_color.a or 1
 
     gl.clear(r, g, b, a)
-    util.screen_transform(rot_value)() -- Aktivera rotationen
+    apply_rotation(rot_value)
 
     local t1_str = tostring(ticker_text)
     local t2_str = tostring(ticker2_text)
