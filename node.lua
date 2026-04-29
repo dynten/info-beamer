@@ -134,8 +134,8 @@ function node.render()
     local b = bg_color[3] or bg_color.b or 0
     local a = bg_color[4] or bg_color.a or 1
 
-    util.screen_transform(rot_value)() -- Aktivera rotationen
     gl.clear(r, g, b, a)
+    util.screen_transform(rot_value)() -- Aktivera rotationen
 
     local t1_str = tostring(ticker_text)
     local t2_str = tostring(ticker2_text)
