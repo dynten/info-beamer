@@ -46,15 +46,9 @@ util.json_watch("config.json", function(config)
     ticker_speed = math.max(0, tonumber(config.ticker_speed) or 200)
     ticker_count = tonumber(config.ticker_count) or 1
     local rot = tonumber(config.rotation) or 0
-    gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
     screen_transform = util.screen_transform(rot)
-    if rot == 90 or rot == 270 then
-        vw = NATIVE_HEIGHT
-        vh = NATIVE_WIDTH
-    else
-        vw = NATIVE_WIDTH
-        vh = NATIVE_HEIGHT
-    end
+    vw = NATIVE_WIDTH
+    vh = NATIVE_HEIGHT
     ticker_x  = vw
     ticker2_x = math.floor(vw / 2)
     grid_rows = math.max(1, math.min(3, tonumber(config.grid_rows) or 1))
