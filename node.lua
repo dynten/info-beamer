@@ -47,7 +47,7 @@ util.json_watch("config.json", function(config)
     ticker_count = tonumber(config.ticker_count) or 1
     local rot = tonumber(config.rotation) or 0
     screen_transform = util.screen_transform(rot)
-    vw = NATIVE_HEIGHT
+    vw = NATIVE_HEIGHT * (9/16)
     vh = NATIVE_HEIGHT
     ticker_x  = vw
     ticker2_x = math.floor(vw / 2)
