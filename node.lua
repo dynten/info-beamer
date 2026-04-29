@@ -17,7 +17,7 @@ local ticker_text   = "J26 Signage"
 local ticker2_text  = "J26 Signage"
 local ticker_x      = NATIVE_WIDTH
 local ticker2_x     = NATIVE_WIDTH / 2  -- börjar fasförskjutet
-local st           = util.screen_transform(0)
+local rot_value    = 0
 local vw           = NATIVE_WIDTH
 local vh           = NATIVE_HEIGHT
 local grid_rows    = 1
@@ -44,7 +44,7 @@ util.json_watch("config.json", function(config)
     ticker_speed = math.max(0, tonumber(config.ticker_speed) or 200)
     ticker_count = tonumber(config.ticker_count) or 1
     local rot = tonumber(config.rotation) or 0
-    st = util.screen_transform(rot)
+    rot_value = rot
     if rot == 90 or rot == 270 then
         vw = NATIVE_HEIGHT
         vh = NATIVE_WIDTH
@@ -134,7 +134,7 @@ function node.render()
     local b = bg_color[3] or bg_color.b or 0
     local a = bg_color[4] or bg_color.a or 1
 
-    st() -- Aktivera rotationen först av allt
+    util.screen_transform(rot_value)() -- Aktivera rotationen
     gl.clear(r, g, b, a)
 
     local t1_str = tostring(ticker_text)
