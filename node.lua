@@ -47,8 +47,13 @@ util.json_watch("config.json", function(config)
     ticker_count = tonumber(config.ticker_count) or 1
     local rot = tonumber(config.rotation) or 0
     screen_transform = util.screen_transform(rot)
-    vw = NATIVE_HEIGHT
-    vh = NATIVE_HEIGHT * (1.4)
+    if rot == 90 or rot == 270 then
+        vw = NATIVE_HEIGHT
+        vh = NATIVE_WIDTH
+    else
+        vw = NATIVE_WIDTH
+        vh = NATIVE_HEIGHT
+    end
     ticker_x  = vw
     ticker2_x = math.floor(vw / 2)
     grid_rows = math.max(1, math.min(3, tonumber(config.grid_rows) or 1))
@@ -91,7 +96,7 @@ local function draw_cell(text, image, x1, y1, x2, y2)
     end
     if text ~= "" then
         local text_str = tostring(text)
-        local size = ch * 0.35
+        local size = math.min(ch * 0.35, 180)
         local tw = font and font:width(text_str, size) or 0
         while font and tw > cw * 0.9 and size > 10 do
             size = math.max(10, size * 0.9)
@@ -138,7 +143,7 @@ function node.render()
     local t2_str = tostring(ticker2_text)
 
     local ticker_h  = math.max(10, math.floor(vh / 10))
-    local text_size = ticker_h * 0.7
+    local text_size = math.min(ticker_h * 0.7, 120)
     local tw1       = (font and text_size > 0) and font:width(t1_str, text_size) or 0
     local tw2       = (font and text_size > 0) and font:width(t2_str, text_size) or 0
 
